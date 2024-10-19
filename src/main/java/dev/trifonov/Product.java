@@ -20,15 +20,13 @@ public class Product {
     }
 
     private boolean isValid(Product newProduct) {
-        return !(equals(newProduct) || this.isIngredientOf(newProduct) || newProduct.isIngredientOf(this));
+        return !(equals(newProduct) || this.isIngredientOf(newProduct) || composition.contains(newProduct));
     }
 
     private boolean isIngredientOf(Product product) {
         for (Product ingredient : product.composition) {
-            if (ingredient.equals(this)) {
+            if (ingredient.equals(this) || this.isIngredientOf(ingredient)) {
                 return true;
-            } else {
-                return this.isIngredientOf(ingredient);
             }
         }
         return false;

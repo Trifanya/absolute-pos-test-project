@@ -10,7 +10,7 @@ public class ProductTest {
         Product cake = new Product("Торт");
         Product flour = new Product("Мука");
 
-        boolean result = cake.addProduct(flour); // можно без проблем добавить фарш в Болоньезе
+        boolean result = cake.addProduct(flour); // можно добавить муку в торт
 
         Assertions.assertTrue(result);
     }
@@ -20,9 +20,9 @@ public class ProductTest {
         Product cake = new Product("Торт");
         Product donat = new Product("Пончик");
         Product flour = new Product("Мука");
-        cake.addProduct(flour);
+        cake.addProduct(flour); // добавляем муку в торт
 
-        boolean result = donat.addProduct(flour);
+        boolean result = donat.addProduct(flour); // можно добавить муку в пончик
 
         Assertions.assertTrue(result);
     }
@@ -48,7 +48,22 @@ public class ProductTest {
     }
 
     @Test
-    public void addProduct_whenNewProductIsParent_shouldReturnFalse() {
+    public void addProduct_whenNewProductIsIngredientOfIngredient_shouldReturnTrue() {
+        Product bolognese = new Product("Болоньезе");
+        Product mince = new Product("Фарш");
+        Product onion = new Product("Лук");
+        Product pasta = new Product("Паста");
+        bolognese.addProduct(mince); // добавляем фарш в Болоньезе
+        mince.addProduct(onion); // добавляем лук в фарш
+        bolognese.addProduct(pasta); // добавляем пасту в Болоньезе
+
+        boolean result = bolognese.addProduct(onion); // можно добавить лук в Болоньезе
+
+        Assertions.assertTrue(result);
+    }
+
+    @Test
+    public void addProduct_whenCurrentProductIsIngredientOfNewIngredient_shouldReturnFalse() {
         Product bolognese = new Product("Болоньезе");
         Product mince = new Product("Фарш");
         bolognese.addProduct(mince); // добавляем фарш в Болоньезе
@@ -59,16 +74,34 @@ public class ProductTest {
     }
 
     @Test
-    public void addProduct_whenNewProductIsParentOfParent_shouldReturnFalse() {
+    public void addProduct_whenCurrentProductIsSubingredientOfNewIngredient_shouldReturnFalse() {
         Product bolognese = new Product("Болоньезе");
         Product mince = new Product("Фарш");
+        Product meat = new Product("Мясо");
         Product onion = new Product("Лук");
         mince.addProduct(onion); // добавляем лук в фарш
+        mince.addProduct(meat);
         bolognese.addProduct(mince); // добавляем фарш в Болоньезе
 
-        boolean result = onion.addProduct(bolognese); // нельзя добавить Болоньезе в лук, т.к. тогда в составе Болоньезе будет сама Болоньезе
+        boolean result = meat.addProduct(bolognese); // нельзя добавить Болоньезе в мясо, т.к. тогда в составе Болоньезе будет сама Болоньезе
 
         Assertions.assertFalse(result);
     }
 
+
+    @Test
+    public void addProduct_whenNewIngredientIsAlreadyInProduct_shouldReturnFalse() {
+        Product bolognese = new Product("Болоньезе");
+        Product mince = new Product("Фарш");
+        Product onion = new Product("Лук");
+        Product pasta = new Product("Паста");
+        bolognese.addProduct(mince); // добавляем фарш в Болоньезе
+        mince.addProduct(onion); // добавляем лук в фарш
+        bolognese.addProduct(onion); // добавляем лук в Болоньезе
+        bolognese.addProduct(pasta); // добавляем пасту в Болоньезе
+
+        boolean result = bolognese.addProduct(onion); // нельзя снова добавить лук в Болоньезе
+
+        Assertions.assertFalse(result);
+    }
 }
